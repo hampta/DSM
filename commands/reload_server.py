@@ -26,7 +26,7 @@ class ReloadServer(commands.Cog):
                         info = await get_server_info(instance.ip, instance.port)
                         em = await embed_generator(info[0], info[1], instance.ip, instance.port, instance.name, instance.game)
                         await msg.edit(embed=em)
-                        self.logger.info(f"<@{payload.member.id}> reloaded server status at {instance.ip}:{instance.port}")
+                        self.logger.info(f"{payload.member} reloaded server status at {instance.ip}:{instance.port}")
                     except (NotFound, Forbidden):
                         await stop_server(instance)
 

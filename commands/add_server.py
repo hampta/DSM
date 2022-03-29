@@ -24,7 +24,7 @@ class AddServer(commands.Cog):
             mes = await ctx.send(embed=emb)
             await Servers.create(channel=ctx.channel.id, message=mes.id, author=ctx.author.id, ip=addr[0], port=addr[1])
             await mes.add_reaction("🔄")
-            self.logger.info(f"<@{ctx.author.id}> added {addr_raw} at server {ctx.message.guild.name}")
+            self.logger.info(f"{ctx.author} added {addr_raw} at server {ctx.message.guild.name}")
         else:
             await ctx.send(":warning: You’ve provided malformed IP address.")
 

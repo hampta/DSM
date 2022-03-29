@@ -28,7 +28,7 @@ class Help(commands.Cog):
         emb.set_footer(text="Developed by <@403972025133301760>")
         emb.set_footer(text=f"Owner <@{ADMIN_ID}>")
         await user.send(embed=emb)
-        self.logger.info(f"Help command called by <@{ctx.author.id}>")
+        self.logger.info(f"Help command called by {ctx.author.id}")
 
 def setup(bot):
     bot.add_cog(Help(bot))

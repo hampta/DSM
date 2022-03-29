@@ -25,7 +25,7 @@ class RemoveServer(commands.Cog):
                 message = await ctx.channel.fetch_message(instance.message)
                 await message.delete()
                 await ctx.send(":white_check_mark: Server removed.")
-                self.logger.info(f"<@{ctx.author.id}> removed {addr_raw} at server {ctx.message.guild.name}")
+                self.logger.info(f"{ctx.author.id} removed {addr_raw} at server {ctx.message.guild.name}")
         else:
             await ctx.send(":warning: You’ve provided malformed IP address.")
 

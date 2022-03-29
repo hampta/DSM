@@ -16,11 +16,14 @@ bot.owner_id = ADMIN_ID
 # add logger which is sent to discord channel
 logger = logging.getLogger('discord')
 logger.setLevel(logging.INFO)
-handler = DiscordWebHookHandler(WEBHOOK_URL)
-handler.setFormatter(logging.Formatter(
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(logging.Formatter(
     '[%(asctime)s] | %(message)s', datefmt='%d-%m-%Y %H:%M'))
-logger.addHandler(handler)
-
+discord_handler = DiscordWebHookHandler(WEBHOOK_URL)
+discord_handler.setFormatter(logging.Formatter(
+    '[%(asctime)s] | %(message)s', datefmt='%d-%m-%Y %H:%M'))
+logger.addHandler(discord_handler)
+logger.addHandler(console_handler)
 
 @bot.event
 async def on_ready():
