@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
+from asyncio import sleep
 from aiohttp.client_exceptions import ClientOSError, ServerDisconnectedError
 from discord import Activity, ActivityType
 from discord.errors import DiscordServerError, Forbidden, NotFound
@@ -37,6 +38,7 @@ class ServersCron(commands.Cog):
             # FUCK DISCORD
             except (DiscordServerError, ClientOSError, ServerDisconnectedError):
                 self.logger.info("discord shitty")
+            await sleep(.5) # temp rate limit fix
         await self.bot.change_presence(activity=Activity(type=ActivityType.watching, name=f"{len(servers_id)} game servers | Online: {online}"))
 
 
