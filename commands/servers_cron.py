@@ -38,7 +38,7 @@ class ServersCron(commands.Cog):
             # FUCK DISCORD
             except (DiscordServerError, ClientOSError, ServerDisconnectedError):
                 self.logger.info("discord shitty")
-            await sleep(.5) # temp rate limit fix
+            await sleep(1) # temp rate limit fix
         await self.bot.change_presence(activity=Activity(type=ActivityType.watching, name=f"{len(servers_id)} game servers | Online: {online}"))
 
 
