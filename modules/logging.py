@@ -1,5 +1,6 @@
 from logging import Handler, LogRecord
-import requests
+import aiohttp
+import asyncio
 
 # custom logger handler
 class DiscordWebHookHandler(Handler):
@@ -9,4 +10,9 @@ class DiscordWebHookHandler(Handler):
 
     def emit(self, record: LogRecord):
         # send record to discord webhook
-        requests.post(self.webhook_url, json={"content": self.format(record)})
+        asyncio.create_task(self.request(record))
+
+    async def request(self, record: LogRecord):
+        async with aiohttp.ClientSession() as session:
+            async with session.post(self.webhook_url, data={"content": self.format(record)}) as resp:
+                pass

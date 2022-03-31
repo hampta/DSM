@@ -6,4 +6,4 @@ orjson
 tortoise-orm==0.18.0
 asyncpg==0.25.0
 python-a2s
-requests
+aiohttp
