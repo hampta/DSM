@@ -44,7 +44,7 @@ async def get_server_info(ip, port):
         if info is None:
             raise
         return (info, players)
-    except (asyncio.exceptions.TimeoutError, ConnectionRefusedError):
+    except (asyncio.exceptions.TimeoutError, ConnectionRefusedError, OSError):
         return (False, False)
     except a2s.exceptions.BufferExhaustedError:
         return (info, False)

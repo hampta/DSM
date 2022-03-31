@@ -14,30 +14,31 @@ class ServersCron(commands.Cog):
         self.logger = logging.getLogger('discord')
         self.bot = bot
         self.crontab.start()
+        self.logger.info("Cron started")
 
     @tasks.loop(minutes=1, reconnect=False)
     async def crontab(self, online=0):
         await self.bot.wait_until_ready()
-        self.logger.info("Cron started")
-        servers_id = await Servers.filter(worked=True).values_list("id", flat=True)
-        for id in servers_id:
-            instance = await Servers.filter(id=id).first()
-            info = await get_server_info(instance.ip, instance.port)
-            em = await embed_generator(info[0], info[1], instance.ip, instance.port, instance.name, instance.game)
-            if info[1]:
-                online += info[0].player_count - info[0].bot_count
-                await Servers.filter(id=id).update(name=info[0].server_name, game=info[0].game)
-            try:
-                channel = self.bot.get_channel(instance.channel)
-                msg = await channel.fetch_message(instance.message)
-                await msg.edit(embed=em)
-                await msg.add_reaction("🔄")
-            except (NotFound, Forbidden):
-                await stop_server(instance)
-            # FUCK DISCORD
-            except (DiscordServerError, ClientOSError, ServerDisconnectedError):
-                self.logger.info("discord shitty")
-        await self.bot.change_presence(activity=Activity(type=ActivityType.watching, name=f"{len(servers_id)} game servers | Online: {online}"))
+        channels = await Servers.filter(worked=True).group_by("channel").values_list("channel", flat=True)
+        for channel_id in channels:
+            servers_ids = await Servers.filter(channel=channel_id).values_list("id", flat=True)
+            channel = self.bot.get_channel(channel_id)
+            for id in servers_ids:
+                instance = await Servers.filter(id=id).first()
+                server_info, players = await get_server_info(instance.ip, instance.port)
+                embed = await embed_generator(server_info, players, instance.ip, instance.port, instance.name, instance.game)
+                if players:
+                    online += server_info.player_count - server_info.bot_count
+                    await Servers.filter(id=id).update(name=server_info.server_name, game=server_info.game)
+                try:
+                    msg = await channel.fetch_message(instance.message)
+                    await msg.edit(embed=embed)
+                except (NotFound, Forbidden):
+                    await stop_server(instance)
+                # FUCK DISCORD
+                except (DiscordServerError, ClientOSError, ServerDisconnectedError):
+                    self.logger.info("discord shitty")
+            await self.bot.change_presence(activity=Activity(type=ActivityType.watching, name=f"{len(servers_ids)} game servers | Online: {online}"))
 
 
 def setup(bot):
