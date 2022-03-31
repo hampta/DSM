@@ -21,7 +21,7 @@ class ServersCron(commands.Cog):
         await self.bot.wait_until_ready()
         channels = await Servers.filter(worked=True).group_by("channel").values_list("channel", flat=True)
         for channel_id in channels:
-            servers_ids = await Servers.filter(channel=channel_id).values_list("id", flat=True)
+            servers_ids = await Servers.filter(channel=channel_id, worked=True).values_list("id", flat=True)
             channel = self.bot.get_channel(channel_id)
             for id in servers_ids:
                 instance = await Servers.filter(id=id).first()
