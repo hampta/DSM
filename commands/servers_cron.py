@@ -38,7 +38,7 @@ class ServersCron(commands.Cog):
         for id in self.servers_ids:
             # Rate limit crutch
             if i == 3:
-                await asyncio.sleep(5)
+                await asyncio.sleep(15)
                 i = 0
             await asyncio.create_task(self.for_id(channel, id))
             i += 1
