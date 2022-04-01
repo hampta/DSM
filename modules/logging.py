@@ -14,5 +14,5 @@ class DiscordWebHookHandler(Handler):
 
     async def request(self, record: LogRecord):
         async with aiohttp.ClientSession() as session:
-            async with session.post(self.webhook_url, data={"content": self.format(record)}) as resp:
+            async with session.post(self.webhook_url, data={"content": self.format(record)}):
                 pass

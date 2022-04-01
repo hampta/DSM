@@ -22,15 +22,12 @@ class ServersCron(commands.Cog):
         channels = await Servers.filter(worked=True).group_by("channel").values_list("channel", flat=True)
         for channel_id in channels:
             await self.for_channels(channel_id)
-
+        await self.bot.change_presence(activity=Activity(type=ActivityType.watching,
+                                                         name=f"{len(self.servers_ids)} game servers | Online: {self.online}"))
+                                                         
     @crontab.before_loop
     async def before_crontab(self):
         self.online = 0
-
-    @crontab.after_loop
-    async def after_crontab(self):
-        await self.bot.change_presence(activity=Activity(type=ActivityType.watching,
-                                                         name=f"{len(self.servers_ids)} game servers | Online: {self.online}"))
 
     async def for_channels(self, channel_id, i=0):
         self.servers_ids = await Servers.filter(channel=channel_id, worked=True).values_list("id", flat=True)
