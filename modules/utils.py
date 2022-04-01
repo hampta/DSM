@@ -59,11 +59,11 @@ async def max_played(players, max=0.0):
     return max
 
 # embed message generator
-async def embed_generator(srv, players, ip, port, name, game):
+async def embed_generator(srv, players, instance):
     if srv is not False:
         em = discord.Embed(title=srv.server_name,
                            description=srv.game, colour=0x10EE00)
-        em.add_field(name="🔌 IP: ", value=f"`{ip}:{port}`", inline=True)
+        em.add_field(name="🔌 IP: ", value=f"`{instance.ip}:{instance.port}`", inline=True)
         em.add_field(name="🛰️ Status: ", value="✅ Server online")
         em.add_field(name="🗺️ Map: ", value=srv.map_name, inline=True)
         if bool(srv.player_count - srv.bot_count) and players:
@@ -87,13 +87,17 @@ async def embed_generator(srv, players, ip, port, name, game):
             player_names, player_scores, player_played = "", "", ""
             time_max = await max_played(players)
             n = 1
-            for pname in players_:
-                if pname in bot_names and float(players_[pname][1]) == time_max:
+            for player_name in players_:
+                if player_name in bot_names and float(players_[player_name][1]) == time_max:
                     continue
-                player_names += f"{n} - {pname if pname != '' else '⏱️ Connecting...'} \n"
-                player_scores += f"{players_[pname][0]} \n"
+                player_scores += f"{players_[player_name][0]} \n"
                 player_played += strftime("%H:%M:%S",
-                                          gmtime(players_[pname][1])) + "\n"
+                                          gmtime(players_[player_name][1])) + "\n"
+                if len(player_name) > 22:
+                    player_name = player_name[:22] + "..."
+                if player_name == "":
+                    player_name = "⏱️ Connecting..."
+                player_names += f"{n} - {player_name} \n"
                 n += 1
             em.add_field(name="♿ Player list: ",
                          value=f"```{player_names}```", inline=True)
@@ -102,17 +106,17 @@ async def embed_generator(srv, players, ip, port, name, game):
             em.add_field(name="⏱️ Time played: ",
                          value=f"```{player_played}```", inline=True)
     else:
-        em = discord.Embed(title=name,
-                           description=game, colour=0xFF0000)
-        em.add_field(name="🔌 IP: ", value=f"`{ip}:{port}`", inline=True)
+        em = discord.Embed(title=instance.name,
+                           description=instance.game, colour=0xFF0000)
+        em.add_field(name="🔌 IP: ", value=f"`{instance.ip}:{instance.port}`", inline=True)
         em.add_field(name="🛰️ Status: ", value=":no_entry: Server offline")
-        #em.add_field(name="🗓️ Was online at: ", value=srv.last)
     em.set_footer(text="Last update",
                   icon_url="https://cdn.discordapp.com/attachments/836638488924782624/941072454674165780/update-icon.png")
     em.timestamp = datetime.datetime.utcnow()
     return em
 
 
-async def stop_server(instance):
-    logger.info(f"Message {instance.message} deleted in {instance.channel} author - {instance.author} | {instance.ip}:{instance.port}")
-    await Servers.filter(id=instance.id).update(worked=False)
+async def stop_server(id):
+    logger.info(f"Stopping server {id}")
+    #logger.info(f"Message {instance.message} deleted in {instance.channel} author - {instance.author} | {instance.ip}:{instance.port}")
+    await Servers.filter(id=id).update(worked=False)

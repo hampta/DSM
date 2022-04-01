@@ -18,10 +18,10 @@ logger = logging.getLogger('discord')
 logger.setLevel(logging.INFO)
 console_handler = logging.StreamHandler()
 console_handler.setFormatter(logging.Formatter(
-    '[%(asctime)s] | %(message)s', datefmt='%d-%m-%Y %H:%M'))
+    '[%(asctime)s] %(message)s', datefmt='%d-%m-%Y %H:%M'))
 discord_handler = DiscordWebHookHandler(WEBHOOK_URL)
 discord_handler.setFormatter(logging.Formatter(
-    '[%(asctime)s] | %(message)s', datefmt='%d-%m-%Y %H:%M'))
+    '[%(asctime)s] %(message)s', datefmt='%d-%m-%Y %H:%M'))
 logger.addHandler(discord_handler)
 logger.addHandler(console_handler)
 

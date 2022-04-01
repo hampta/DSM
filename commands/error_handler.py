@@ -2,6 +2,9 @@ import discord
 import traceback
 import sys
 from discord.ext import commands
+from aiohttp.client_exceptions import ClientOSError, ServerDisconnectedError
+from discord.errors import DiscordServerError
+
 
 class CommandErrorHandler(commands.Cog):
 
@@ -45,6 +48,9 @@ class CommandErrorHandler(commands.Cog):
         elif isinstance(error, commands.BadArgument):
             if ctx.command.qualified_name == 'tag list':
                 await ctx.send('I could not find that member. Please try again.')
+
+        elif isinstance(error, DiscordServerError) or isinstance(error, ClientOSError) or isinstance(error, ServerDisconnectedError):
+            self.logger.info("discord shitty")
 
         else:
             print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
