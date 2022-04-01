@@ -32,11 +32,16 @@ class ServersCron(commands.Cog):
         await self.bot.change_presence(activity=Activity(type=ActivityType.watching,
                                                          name=f"{len(self.servers_ids)} game servers | Online: {self.online}"))
 
-    async def for_channels(self, channel_id):
+    async def for_channels(self, channel_id, i=0):
         self.servers_ids = await Servers.filter(channel=channel_id, worked=True).values_list("id", flat=True)
         channel = self.bot.get_channel(channel_id)
         for id in self.servers_ids:
+            # Rate limit crutch
+            if i == 3:
+                await asyncio.sleep(5)
+                i = 0
             await asyncio.create_task(self.for_id(channel, id))
+            i += 1
 
     async def for_id(self, channel, id):
         self.instance = await Servers.filter(id=id).first()
