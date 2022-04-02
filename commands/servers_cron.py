@@ -30,14 +30,14 @@ class ServersCron(commands.Cog):
     async def before_crontab(self):
         self.online = 0
 
-    async def for_channels(self, channel_id):
+    async def for_channels(self, channel_id, sleep=1):
         self.servers_ids = await Servers.filter(channel=channel_id, worked=True).values_list("id", flat=True)
         channel = self.bot.get_channel(channel_id)
+        if len(self.servers_ids) > 3:
+            sleep = 15
         for id in self.servers_ids:
-            # Rate limit crutch
-            #await asyncio.create_task(self.for_id(channel, id))
             await self.for_id(channel, id)
-            await asyncio.sleep(1)
+            await asyncio.sleep(sleep)
 
     async def for_id(self, channel, id):
         self.instance = await Servers.filter(id=id).first()
