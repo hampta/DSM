@@ -15,6 +15,7 @@ class ServersCron(commands.Cog):
         self.bot = bot
         self.crontab.start()
         self.logger.info("Cron started")
+        self.online = 0
 
     @tasks.loop(minutes=1, reconnect=False)
     async def crontab(self):
