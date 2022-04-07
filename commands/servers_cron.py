@@ -25,9 +25,6 @@ class ServersCron(commands.Cog):
             #await self.for_channels(channel_id)
         await self.bot.change_presence(activity=Activity(type=ActivityType.watching,
                                                          name=f"{len(self.servers_ids)} game servers | Online: {self.online}"))
-                                                         
-    @crontab.before_loop
-    async def before_crontab(self):
         self.online = 0
 
     async def for_channels(self, channel_id, sleep=1):
