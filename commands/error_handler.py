@@ -30,7 +30,7 @@ class CommandErrorHandler(commands.Cog):
             if cog._get_overridden_method(cog.cog_command_error) is not None:
                 return
 
-        ignored = (commands.CommandNotFound, )
+        ignored = (commands.CommandNotFound, DiscordServerError, ClientOSError, ServerDisconnectedError, )
         error = getattr(error, 'original', error)
 
         if isinstance(error, ignored):
@@ -48,9 +48,6 @@ class CommandErrorHandler(commands.Cog):
         elif isinstance(error, commands.BadArgument):
             if ctx.command.qualified_name == 'tag list':
                 await ctx.send('I could not find that member. Please try again.')
-
-        elif isinstance(error, DiscordServerError) or isinstance(error, ClientOSError) or isinstance(error, ServerDisconnectedError):
-            self.logger.info("discord shitty")
 
         else:
             print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
