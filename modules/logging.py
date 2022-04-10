@@ -1,7 +1,6 @@
 from logging import Handler, LogRecord
 from discord import Webhook, RequestsWebhookAdapter
 from aiohttp import client_exceptions
-from requests.exceptions import ConnectionError
 
 
 # custom logger handler
