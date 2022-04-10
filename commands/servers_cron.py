@@ -18,18 +18,17 @@ class ServersCron(commands.Cog):
         self.crontab.start()
         self.logger.info("Cron started")
 
+    @tasks.loop(seconds=25)
+    async def presence(self):
+        await self.bot.change_presence(activity=Activity(type=ActivityType.watching,
+                                                         name=f"{len(self.servers_ids)} game servers"))
+
     @tasks.loop(minutes=1, reconnect=False)
     async def crontab(self):
         await self.bot.wait_until_ready()
         channels = await Servers.filter(worked=True).group_by("channel").values_list("channel", flat=True)
         for channel_id in channels:
-            await asyncio.create_task(self.for_channels(channel_id))
-        await self.bot.change_presence(activity=Activity(type=ActivityType.watching,
-                                                         name=f"{len(self.servers_ids)} game servers | Online: {self.online}"))
-
-    @crontab.before_loop
-    async def before_crontab(self):
-        self.online = 0
+            asyncio.create_task(self.for_channels(channel_id))
 
     async def for_channels(self, channel_id, sleep=.5):
         self.servers_ids = await Servers.filter(channel=channel_id, worked=True).values_list("id", flat=True)
@@ -37,16 +36,16 @@ class ServersCron(commands.Cog):
         if len(self.servers_ids) > 3:
            sleep = 6
         for id in self.servers_ids:
+            self.logger.info(f"Cron: {id}, {channel.name}")
             await self.for_id(channel, id)
             await asyncio.sleep(sleep)
+        self.presence.start()
 
     async def for_id(self, channel, id):
         instance = await Servers.filter(id=id).first()
         server_info, players = await get_server_info(instance.ip, instance.port)
         if server_info:
             await Servers.filter(id=id).update(name=server_info.server_name, game=server_info.game)
-        if players:
-            self.online += server_info.player_count - server_info.bot_count
         try:
             msg = await channel.fetch_message(instance.message)
             embed = await embed_generator(server_info, players, instance)
