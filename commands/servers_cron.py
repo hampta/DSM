@@ -18,7 +18,6 @@ class ServersCron(commands.Cog):
         self.crontab.start()
         self.logger.info("Cron started")
 
-
     @tasks.loop(minutes=1, reconnect=False)
     async def crontab(self):
         await self.bot.wait_until_ready()
@@ -33,7 +32,6 @@ class ServersCron(commands.Cog):
         if len(self.servers_ids) > 3:
            sleep = 6
         for id in self.servers_ids:
-            self.logger.info(f"Cron: {id}, {channel.name}")
             await self.for_id(channel, id)
             await asyncio.sleep(sleep)
 
