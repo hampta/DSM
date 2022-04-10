@@ -18,10 +18,6 @@ class ServersCron(commands.Cog):
         self.crontab.start()
         self.logger.info("Cron started")
 
-    @tasks.loop(seconds=25)
-    async def presence(self):
-        await self.bot.change_presence(activity=Activity(type=ActivityType.watching,
-                                                         name=f"{len(self.servers_ids)} game servers"))
 
     @tasks.loop(minutes=1, reconnect=False)
     async def crontab(self):
@@ -29,7 +25,8 @@ class ServersCron(commands.Cog):
         channels = await Servers.filter(worked=True).group_by("channel").values_list("channel", flat=True)
         for channel_id in channels:
             asyncio.create_task(self.for_channels(channel_id))
-
+        await self.bot.change_presence(activity=Activity(type=ActivityType.watching,
+                                                         name=f"{len(self.servers_ids)} game servers"))
     async def for_channels(self, channel_id, sleep=.5):
         self.servers_ids = await Servers.filter(channel=channel_id, worked=True).values_list("id", flat=True)
         channel = self.bot.get_channel(channel_id)
@@ -39,7 +36,6 @@ class ServersCron(commands.Cog):
             self.logger.info(f"Cron: {id}, {channel.name}")
             await self.for_id(channel, id)
             await asyncio.sleep(sleep)
-        self.presence.start()
 
     async def for_id(self, channel, id):
         instance = await Servers.filter(id=id).first()
