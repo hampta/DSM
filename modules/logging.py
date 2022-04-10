@@ -12,7 +12,7 @@ class DiscordWebHookHandler(Handler):
 
     def emit(self, record: LogRecord):
         # send record to discord webhook
-        if not record.msg.find("is rate limited"):
+        if record.msg.find("is rate limited"):
             try:
                 self.webhook.send(self.format(record), username='Logs')
             except (client_exceptions.ClientOSError, ConnectionError, client_exceptions.ClientConnectorError):
