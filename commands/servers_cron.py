@@ -17,6 +17,7 @@ class ServersCron(commands.Cog):
         self.bot = bot
         self.crontab.start()
         self.logger.info("Cron started")
+        self.servers_ids = []
 
     @tasks.loop(minutes=1, reconnect=False)
     async def crontab(self):
@@ -26,6 +27,7 @@ class ServersCron(commands.Cog):
             asyncio.create_task(self.for_channels(channel_id))
         await self.bot.change_presence(activity=Activity(type=ActivityType.watching,
                                                          name=f"{len(self.servers_ids)} game servers"))
+
     async def for_channels(self, channel_id, sleep=.5):
         self.servers_ids = await Servers.filter(channel=channel_id, worked=True).values_list("id", flat=True)
         channel = self.bot.get_channel(channel_id)
