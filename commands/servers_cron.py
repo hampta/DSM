@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import asyncio
 import logging
 
 
@@ -7,14 +8,13 @@ from discord.errors import Forbidden, NotFound
 from discord.ext import commands, tasks
 from modules.db import Servers
 from modules.utils import embed_generator, get_server_info, stop_server
-import asyncio
+
 
 
 class ServersCron(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.logger = logging.getLogger('discord')
         self.bot = bot
-        self.loop = asyncio.get_event_loop()
         self.crontab.start()
         self.logger.info("Cron started")
 
@@ -23,7 +23,7 @@ class ServersCron(commands.Cog):
         await self.bot.wait_until_ready()
         channels = await Servers.filter(worked=True).group_by("channel").values_list("channel", flat=True)
         for channel_id in channels:
-            await self.loop.create_task(self.for_channels(channel_id))
+            await asyncio.create_task(self.for_channels(channel_id))
         await self.bot.change_presence(activity=Activity(type=ActivityType.watching,
                                                          name=f"{len(self.servers_ids)} game servers | Online: {self.online}"))
 
