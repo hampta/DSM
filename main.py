@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 import logging
-from os import listdir
+import platform
+import os
 
+import discord
 from discord.ext import commands
 
-from modules.logging import DiscordWebHookHandler
+from config import ADMIN_ID, COMMAND_PREFIX, TOKEN, WEBHOOK_URL
 from modules.db import init
-from config import TOKEN, WEBHOOK_URL, COMMAND_PREFIX, ADMIN_ID
+from modules.logging import DiscordWebHookHandler
 
 bot = commands.Bot(command_prefix=COMMAND_PREFIX)
 bot.remove_command('help')
@@ -25,19 +27,25 @@ discord_handler.setFormatter(logging.Formatter(
 logger.addHandler(discord_handler)
 logger.addHandler(console_handler)
 
+
 @bot.event
 async def on_ready():
     # init db
     await init()
     logger.info("Starting bot...")
     # load commands
-    for filename in listdir("./commands"):
+    for filename in os.listdir("./commands"):
         if filename.endswith(".py"):
             bot.load_extension(f"commands.{filename[:-3]}")
             logger.info(f"Loaded {filename[:-3]}")
-    logger.info('Logged in as {0}'.format(bot.user.name))
-    logger.info('Bot is ready')
     logger.info('----------------------------------------')
+    logger.info('Logged in as {0}'.format(bot.user.name))
+    logger.info(f"Discord API version: {discord.__version__}")
+    logger.info(f"Python version: {platform.python_version()}")
+    logger.info(
+        f"Running on: {platform.system()} {platform.release()} ({os.name})")
+    logger.info('----------------------------------------')
+    logger.info('Bot is ready')
 
 
 # start bot

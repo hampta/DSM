@@ -2,9 +2,9 @@ import discord
 import traceback
 import sys
 from discord.ext import commands
-from aiohttp.client_exceptions import ClientOSError, ServerDisconnectedError
+from aiohttp.client_exceptions import ClientOSError, ServerDisconnectedError, ClientConnectorError
 from discord.errors import DiscordServerError
-
+import socket
 
 class CommandErrorHandler(commands.Cog):
 
@@ -30,7 +30,7 @@ class CommandErrorHandler(commands.Cog):
             if cog._get_overridden_method(cog.cog_command_error) is not None:
                 return
 
-        ignored = (commands.CommandNotFound, DiscordServerError, ClientOSError, ServerDisconnectedError, )
+        ignored = (commands.CommandNotFound, DiscordServerError, ClientOSError, ServerDisconnectedError, ClientConnectorError, socket.gaierror)
         error = getattr(error, 'original', error)
 
         if isinstance(error, ignored):

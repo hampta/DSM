@@ -78,7 +78,7 @@ async def embed_generator(srv, players, instance):
             "✅ Enabled" if srv.vac_enabled else "🚫 Disabled"), inline=True)
         em.add_field(name="🖥️ Running on: ", value=(
             "🐧 Linux" if srv.platform == "l" else "🪟 Windows"), inline=True)
-        em.add_field(name="Password: ", value=(
+        em.add_field(name="🔑 Password: ", value=(
             "🔐 Yes" if srv.password_protected else "🔓 No"), inline=True)
         if bool(srv.player_count - srv.bot_count) and players:
             players_ = {x.name: [x.score, x.duration] for x in players}
