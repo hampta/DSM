@@ -30,5 +30,5 @@ class ReloadServer(commands.Cog):
                     await stop_server(instance)
                 self.logger.info(f"{payload.member} reloaded server {instance.ip}:{instance.port} in #{channel}, {msg.guild.name}")
 
-def setup(bot):
+def setup(bot: commands.Bot):
     bot.add_cog(ReloadServer(bot))

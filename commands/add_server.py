@@ -9,7 +9,7 @@ from modules.utils import is_valid_ip, raw_ip
 
 # Add server command
 class AddServer(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.logger = logging.getLogger('discord')
 
@@ -34,5 +34,5 @@ class AddServer(commands.Cog):
             user = await self.bot.fetch_user(ctx.author.id)
             await user.send(":warning: I don’t have permission to send/delete messages in this channel.")
 
-def setup(bot):
+def setup(bot: commands.Bot):
     bot.add_cog(AddServer(bot))

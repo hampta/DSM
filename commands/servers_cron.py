@@ -2,13 +2,12 @@
 import asyncio
 import logging
 
-
+import aiohttp.client_exceptions
 from discord import Activity, ActivityType
 from discord.errors import Forbidden, NotFound
 from discord.ext import commands, tasks
 from modules.db import Servers
 from modules.utils import embed_generator, get_server_info, stop_server
-
 
 
 class ServersCron(commands.Cog):
@@ -17,23 +16,23 @@ class ServersCron(commands.Cog):
         self.bot = bot
         self.crontab.start()
         self.logger.info("Cron started")
-        self.servers_ids = []
 
-    @tasks.loop(minutes=1, reconnect=False)
+    @tasks.loop(minutes=1, reconnect=True)
     async def crontab(self):
         await self.bot.wait_until_ready()
         channels = await Servers.filter(worked=True).group_by("channel").values_list("channel", flat=True)
         for channel_id in channels:
             asyncio.create_task(self.for_channels(channel_id))
+        servers_count = await Servers.filter(worked=True).count()
         await self.bot.change_presence(activity=Activity(type=ActivityType.watching,
-                                                         name=f"{len(self.servers_ids)} game servers"))
+                                                         name=f"{servers_count} game servers"))
 
     async def for_channels(self, channel_id, sleep=.5):
-        self.servers_ids = await Servers.filter(channel=channel_id, worked=True).values_list("id", flat=True)
+        servers_ids = await Servers.filter(channel=channel_id, worked=True).values_list("id", flat=True)
         channel = self.bot.get_channel(channel_id)
-        if len(self.servers_ids) > 3:
-           sleep = 6
-        for id in self.servers_ids:
+        if len(servers_ids) > 3:
+            sleep = 6
+        for id in servers_ids:
             await self.for_id(channel, id)
             await asyncio.sleep(sleep)
 
@@ -46,11 +45,11 @@ class ServersCron(commands.Cog):
             msg = await channel.fetch_message(instance.message)
             embed = await embed_generator(server_info, players, instance)
             await msg.edit(embed=embed)
-        except (NotFound, Forbidden):
+        except (NotFound, Forbidden, aiohttp.client_exceptions.ClientOSError):
             user = await self.bot.fetch_user(instance.author)
             await user.send(f"Server {instance.ip}:{instance.port} in channel <#{instance.channel}> is off if you not delete bot message, check bot permissions")
             await stop_server(id)
 
 
-def setup(bot):
+def setup(bot: commands.Bot):
     bot.add_cog(ServersCron(bot))

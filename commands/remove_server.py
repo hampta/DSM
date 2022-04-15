@@ -32,5 +32,5 @@ class RemoveServer(commands.Cog):
             await ctx.send(":warning: You’ve provided malformed IP address.")
 
 
-def setup(bot):
+def setup(bot: commands.Bot):
     bot.add_cog(RemoveServer(bot))

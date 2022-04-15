@@ -54,5 +54,5 @@ class CommandErrorHandler(commands.Cog):
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 
-def setup(bot):
+def setup(bot: commands.Bot):
     bot.add_cog(CommandErrorHandler(bot))

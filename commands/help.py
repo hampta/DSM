@@ -30,5 +30,5 @@ class Help(commands.Cog):
         await user.send(embed=emb)
         self.logger.info(f"{ctx.author.name}#{ctx.author.discriminator} asked for help in #{ctx.channel.name}, {ctx.guild.name}")
 
-def setup(bot):
+def setup(bot: commands.Bot):
     bot.add_cog(Help(bot))
