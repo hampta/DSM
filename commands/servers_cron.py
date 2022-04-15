@@ -45,7 +45,7 @@ class ServersCron(commands.Cog):
             msg = await channel.fetch_message(instance.message)
             embed = await embed_generator(server_info, players, instance)
             await msg.edit(embed=embed)
-        except (NotFound, Forbidden, aiohttp.client_exceptions.ClientOSError):
+        except (NotFound, Forbidden):
             user = await self.bot.fetch_user(instance.author)
             await user.send(f"Server {instance.ip}:{instance.port} in channel <#{instance.channel}> is off if you not delete bot message, check bot permissions")
             await stop_server(id)
