@@ -2,7 +2,7 @@
 import asyncio
 import logging
 
-import aiohttp.client_exceptions
+
 from discord import Activity, ActivityType
 from discord.errors import Forbidden, NotFound
 from discord.ext import commands, tasks
@@ -25,9 +25,9 @@ class ServersCron(commands.Cog):
             asyncio.create_task(self.for_channels(channel_id))
         servers_count = await Servers.filter(worked=True).count()
         await self.bot.change_presence(activity=Activity(type=ActivityType.watching,
-                                                         name=f"{servers_count} game servers"))
+                                                         name=f"Use !help | {servers_count} game servers"))
 
-    async def for_channels(self, channel_id, sleep=.5):
+    async def for_channels(self, channel_id, sleep=.7):
         servers_ids = await Servers.filter(channel=channel_id, worked=True).values_list("id", flat=True)
         channel = self.bot.get_channel(channel_id)
         if len(servers_ids) > 3:
