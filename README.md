@@ -2,7 +2,7 @@
 
 ## Information ##
 ### What is Server Monitoring bot ###
-It is a bot. A discord bot. A python discord bot. A python discord bot that queries Source and GoldSrc servers and notifies those who added several servers to their watchlists if those servers are currently down. Pretty simple. It is also capable of showing you detailed information such as:
+A python discord bot that queries Source and GoldSrc servers and notifies those who added several servers to their watchlists if those servers are currently down. Pretty simple. It is also capable of showing you detailed information such as:
 
 * Hostname
 * Current map
