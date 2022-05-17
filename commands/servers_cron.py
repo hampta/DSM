@@ -16,7 +16,6 @@ class ServersCron(commands.Cog):
         self.crontab.start()
         self.logger.info("Cron started")
         self.loop = asyncio.get_event_loop()
-        self.crontab_check.start()
 
     @tasks.loop(minutes=1, reconnect=True)
     async def crontab(self):
