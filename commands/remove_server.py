@@ -17,19 +17,18 @@ class RemoveServer(commands.Cog):
     async def remove(self, ctx: Message, addr_raw: str):
         """Remove server from database"""
         await ctx.message.delete()
-        if await is_valid_ip(addr_raw):
-            addr = await raw_ip(addr_raw)
-            instance = await Servers.filter(ip=addr[0], port=addr[1], channel=ctx.channel.id, worked=True).first()
-            if instance is None:
-                await ctx.send(":warning: You’ve provided malformed IP address.")
-            else:
-                await Servers.filter(id=instance.id).update(worked=False)
-                message = await ctx.channel.fetch_message(instance.message)
-                await message.delete()
-                await ctx.send(":white_check_mark: Server removed.")
-                self.logger.info(f"{ctx.author.name}#{ctx.author.discriminator} removed server {addr_raw} in #{ctx.channel.name}, {ctx.guild.name}")
+        if not await is_valid_ip(addr_raw):
+            return ctx.send(":warning: You’ve provided malformed IP address.")
+        ip, port = await raw_ip(addr_raw)
+        instance = await Servers.filter(ip=ip, port=port, channel=ctx.channel.id, worked=True).first()
+        if instance is None:
+            return await ctx.send(":warning: Server is not in database.")
         else:
-            await ctx.send(":warning: You’ve provided malformed IP address.")
+            await Servers.filter(id=instance.id).update(worked=False)
+            message = await ctx.channel.fetch_message(instance.message)
+            await message.delete()
+            await ctx.send(":white_check_mark: Server removed.")
+
 
 
 def setup(bot: commands.Bot):

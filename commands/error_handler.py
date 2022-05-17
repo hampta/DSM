@@ -1,15 +1,18 @@
 import discord
 import traceback
 import sys
+import logging
 from discord.ext import commands
 from aiohttp.client_exceptions import ClientOSError, ServerDisconnectedError, ClientConnectorError
 from discord.errors import DiscordServerError
 import socket
 
+
 class CommandErrorHandler(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.logger = logging.getLogger('discord')
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
@@ -30,7 +33,8 @@ class CommandErrorHandler(commands.Cog):
             if cog._get_overridden_method(cog.cog_command_error) is not None:
                 return
 
-        ignored = (commands.CommandNotFound, DiscordServerError, ClientOSError, ServerDisconnectedError, ClientConnectorError, socket.gaierror, )
+        ignored = (commands.CommandNotFound, DiscordServerError, ClientOSError,
+                   ServerDisconnectedError, ClientConnectorError, socket.gaierror, )
         error = getattr(error, 'original', error)
 
         if isinstance(error, ignored):
@@ -50,8 +54,10 @@ class CommandErrorHandler(commands.Cog):
                 await ctx.send('I could not find that member. Please try again.')
 
         else:
-            print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
-            traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
+            self.logger.error('Ignoring exception in command {}:'.format(
+                ctx.command), file=sys.stderr)
+            traceback.print_exception(
+                type(error), error, error.__traceback__, file=sys.stderr)
 
 
 def setup(bot: commands.Bot):

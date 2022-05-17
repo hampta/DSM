@@ -59,35 +59,34 @@ async def max_played(players, max=0.0):
     return max
 
 # embed message generator
-async def embed_generator(srv, players, instance):
-    if srv is not False:
-        em = discord.Embed(title=srv.server_name,
-                           description=srv.game, colour=0x10EE00)
+async def embed_generator(server_info, players, instance):
+    if server_info:
+        em = discord.Embed(title=server_info.server_name,
+                           description=server_info.game, colour=0x10EE00)
         em.add_field(name="🔌 IP: ", value=f"`{instance.ip}:{instance.port}`", inline=True)
         em.add_field(name="🛰️ Status: ", value="✅ Server online")
-        em.add_field(name="🗺️ Map: ", value=srv.map_name, inline=True)
-        if bool(srv.player_count - srv.bot_count) and players:
+        em.add_field(name="🗺️ Map: ", value=server_info.map_name, inline=True)
+        if server_info.player_count - server_info.bot_count and players:
             em.add_field(name=f"😎 Players: ",
-                         value=srv.player_count - srv.bot_count, inline=True)
+                         value=server_info.player_count - server_info.bot_count, inline=True)
         else:
             em.add_field(name=f"😎 Players: ", value="0", inline=True)
-        em.add_field(name=f"🤖 Bots: ", value=srv.bot_count, inline=True)
+        em.add_field(name=f"🤖 Bots: ", value=server_info.bot_count, inline=True)
         em.add_field(name=f"🌍 Max Players: ",
-                     value=srv.max_players, inline=True)
+                     value=server_info.max_players, inline=True)
         em.add_field(name="👮 VAC: ", value=(
-            "✅ Enabled" if srv.vac_enabled else "🚫 Disabled"), inline=True)
+            "✅ Enabled" if server_info.vac_enabled else "🚫 Disabled"), inline=True)
         em.add_field(name="🖥️ Running on: ", value=(
-            "🐧 Linux" if srv.platform == "l" else "🪟 Windows"), inline=True)
+            "🐧 Linux" if server_info.platform == "l" else "🪟 Windows"), inline=True)
         em.add_field(name="🔑 Password: ", value=(
-            "🔐 Yes" if srv.password_protected else "🔓 No"), inline=True)
-        if bool(srv.player_count - srv.bot_count) and players:
+            "🔐 Yes" if server_info.password_protected else "🔓 No"), inline=True)
+        if server_info.player_count - server_info.bot_count and players:
             players_ = {x.name: [x.score, x.duration] for x in players}
-            players_: Dict = dict(
+            players_ = dict(
                 sorted(players_.items(), key=operator.itemgetter(1), reverse=True))
             player_names, player_scores, player_played = "", "", ""
             time_max = await max_played(players)
-            n = 1
-            for player_name in players_:
+            for n, player_name in enumerate(players_):
                 if player_name in bot_names and float(players_[player_name][1]) == time_max:
                     continue
                 player_scores += f"{players_[player_name][0]} \n"
@@ -95,10 +94,9 @@ async def embed_generator(srv, players, instance):
                                           gmtime(players_[player_name][1])) + "\n"
                 if len(player_name) > 22:
                     player_name = player_name[:22] + "..."
-                if player_name == "":
+                if not player_name:
                     player_name = "⏱️ Connecting..."
                 player_names += f"{n} - {player_name} \n"
-                n += 1
             em.add_field(name="♿ Player list: ",
                          value=f"```{player_names}```", inline=True)
             em.add_field(name="⚔️ Score: ",
@@ -116,7 +114,12 @@ async def embed_generator(srv, players, instance):
     return em
 
 
-async def stop_server(id):
-    logger.info(f"Stopping server {id}")
+async def stop_server(message_id):
+    logger.info(f"Stopping server {message_id}")
     #logger.info(f"Message {instance.message} deleted in {instance.channel} author - {instance.author} | {instance.ip}:{instance.port}")
-    await Servers.filter(id=id).update(worked=False)
+    await Servers.filter(message=message_id).update(worked=False)
+
+
+async def start_server(message_id):
+    logger.info(f"Starting server {message_id}")
+    await Servers.filter(message=message_id).update(worked=True)
