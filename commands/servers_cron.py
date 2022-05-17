@@ -8,7 +8,6 @@ from discord.errors import Forbidden, NotFound
 from discord.ext import commands, tasks
 from modules.db import Servers
 from modules.utils import embed_generator, get_server_info, stop_server
-from pprint import pprint
 
 class ServersCron(commands.Cog):
     def __init__(self, bot: commands.Bot):
