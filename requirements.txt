@@ -1,10 +1,16 @@
+# database orm
+tortoise-orm==0.18.0
+asyncpg==0.25.0
+# discord library
 py-cord
+# aiohttp speedup
 aiodns
 cchardet
 brotlipy
+# json speedup
 orjson
-tortoise-orm==0.18.0
-asyncpg==0.25.0
-python-a2s
+# other
+uvloop
 aiohttp
 requests
+python-a2s
