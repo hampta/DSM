@@ -29,7 +29,7 @@ bot.remove_command('help')
 bot.owner_id = ADMIN_ID
 
 # Setting up asyncio to use uvloop if possible, a faster implementation on the event loop
-if platform.system() != "Windows":
+if os.name != "posix":
     import uvloop
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     logger.info("Linux decected, using uvloop")
