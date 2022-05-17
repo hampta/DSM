@@ -30,6 +30,5 @@ class RemoveServer(commands.Cog):
             await ctx.send(":white_check_mark: Server removed.")
 
 
-
 def setup(bot: commands.Bot):
     bot.add_cog(RemoveServer(bot))
