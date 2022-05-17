@@ -11,6 +11,9 @@ from config import ADMIN_ID, COMMAND_PREFIX, TOKEN, WEBHOOK_URL
 from modules.db import init
 from modules.logging import DiscordWebHookHandler
 
+bot = commands.Bot(command_prefix=COMMAND_PREFIX)
+bot.remove_command('help')
+bot.owner_id = ADMIN_ID
 
 # add logger which is sent to discord channel
 logger = logging.getLogger('discord')
@@ -24,12 +27,9 @@ discord_handler.setFormatter(logging.Formatter(
 logger.addHandler(discord_handler)
 logger.addHandler(console_handler)
 
-bot = commands.Bot(command_prefix=COMMAND_PREFIX)
-bot.remove_command('help')
-bot.owner_id = ADMIN_ID
 
 # Setting up asyncio to use uvloop if possible, a faster implementation on the event loop
-if os.name != "posix":
+if os.name == "posix":
     import uvloop
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     logger.info("Linux decected, using uvloop")
