@@ -1,21 +1,15 @@
 # -*- coding: utf-8 -*-
-from tortoise import Tortoise
+from config import DATABASE_URL
+from tortoise import Tortoise, fields
 from tortoise.models import Model
-from tortoise import fields
-from os import getenv
 
-# init db function for tortoise ORM or sqlite if not found in env variables (for testing)
+
+# init db function 
 async def init():
-    if getenv("DATABASE_URL") is None:
-        await Tortoise.init(
-            db_url='sqlite://database.sqlite3',
-            modules={'models': ['modules.db']}
-        )
-    else:
-        await Tortoise.init(
-            db_url=getenv("DATABASE_URL"),
-            modules={'models': ['modules.db']}
-        )
+    await Tortoise.init(
+        db_url=DATABASE_URL,
+        modules={'models': ['modules.db']}
+    )
     await Tortoise.generate_schemas()
 
 # server model for DB
