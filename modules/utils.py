@@ -1,36 +1,39 @@
 # -*- coding: utf-8 -*-
-
 import asyncio
 import datetime
 import operator
-import logging
 import re
 from time import gmtime, strftime
-from typing import Dict
 
 import a2s
 import discord
 
 from modules.db import Servers
+from modules.logging import logger
 
 # open file and return content
 bot_names = open("resources/botnames.txt", "r").read()
 bot_names = bot_names.split("\n")
-logger = logging.getLogger('discord')
 
 # get ip and port from string
-async def raw_ip(r_ip):
-    r_ip = r_ip.split(":")
-    ip = r_ip[0]
-    if len(r_ip) == 1:
+async def get_ip_port(address: str) -> tuple:
+    ip, *port = address.split(":")
+    if not port:
         port = 27015
     else:
-        port = r_ip[1]
+        port = port[0]
     return (ip, port)
 
 # validate ip
 async def is_valid_ip(address: str) -> bool:
+    # check if ip is valid
     if re.match(r"^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9]{1,2})(\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9]{1,2})){3}(:((6553[0-5])|(655[0-2][0-9])|(65[0-4][0-9]{2})|(6[0-4][0-9]{3})|([1-5][0-9]{4})|([0-5]{1,5})|([0-9]{1,4})))?$|^$", address):
+        return True
+    # domain check
+    elif re.match(r"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$", address):
+        return True
+    # domain:port check
+    elif re.match(r"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])(:((6553[0-5])|(655[0-2][0-9])|(65[0-4][0-9]{2})|(6[0-4][0-9]{3})|([1-5][0-9]{4})|([0-5]{1,5})|([0-9]{1,4})))$|^$", address):
         return True
     else:
         return False

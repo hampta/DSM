@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
-import logging
-
 from discord import Message
 from discord.ext import commands
-from modules.utils import raw_ip, is_valid_ip
 from modules.db import Servers
+from modules.logging import logger
+from modules.utils import is_valid_ip, raw_ip
+
 
 # Remove server command
 class RemoveServer(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.logger = logging.getLogger('discord')
 
     @commands.has_permissions(administrator=True)
     @commands.command(pass_context=True, aliases=['r'], ignore_extra=True)
@@ -28,7 +27,7 @@ class RemoveServer(commands.Cog):
             message = await ctx.channel.fetch_message(instance.message)
             await message.delete()
             await ctx.send(":white_check_mark: Server removed.")
-
+            logger.info(f"{ctx.author.name}#{ctx.author.discriminator} removed server {addr_raw} in #{ctx.channel.name}, {ctx.guild.name}")
 
 def setup(bot: commands.Bot):
     bot.add_cog(RemoveServer(bot))

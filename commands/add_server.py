@@ -1,17 +1,14 @@
 # -*- coding: utf-8 -*-
-import logging
-
 from discord import Embed, Message, errors
 from discord.ext import commands
 from modules.db import Servers
-from modules.utils import is_valid_ip, raw_ip
-
+from modules.utils import is_valid_ip, get_ip_port
+from modules.logging import logger
 
 # Add server command
 class AddServer(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.logger = logging.getLogger('discord')
 
     @commands.has_permissions(administrator=True)
     @commands.command(pass_context=True, aliases=['a'], ignore_extra=True)
@@ -20,13 +17,13 @@ class AddServer(commands.Cog):
         await ctx.message.delete()
         if not await is_valid_ip(addr_raw):
             return ctx.send(":warning: You’ve provided malformed IP address.")
-        addr = await raw_ip(addr_raw)
+        ip, port = await get_ip_port(addr_raw)
         emb = Embed(title="Please wait...",
                             description="About 1 minute", colour=0xFFFF00)
         mes = await ctx.send(embed=emb)
-        await Servers.create(channel=ctx.channel.id, message=mes.id, author=ctx.author.id, ip=addr[0], port=addr[1])
+        await Servers.create(channel=ctx.channel.id, message=mes.id, author=ctx.author.id, ip=ip, port=port)
         await mes.add_reaction("🔄")
-        self.logger.info(f"{ctx.author.name}#{ctx.author.discriminator} added server {addr_raw} in #{ctx.channel.name}, {ctx.guild.name}")
+        logger.info(f"{ctx.author.name}#{ctx.author.discriminator} added server {addr_raw} in #{ctx.channel.name}, {ctx.guild.name}")
 
     async def cog_command_error(self, ctx: Message, error):
         if isinstance(error, errors.Forbidden):

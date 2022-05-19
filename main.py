@@ -1,38 +1,24 @@
 # -*- coding: utf-8 -*-
 import asyncio
-import logging
-import platform
 import os
+import platform
 
 import discord
 from discord.ext import commands
 
-from config import ADMIN_ID, COMMAND_PREFIX, TOKEN, WEBHOOK_URL
+from config import ADMIN_ID, COMMAND_PREFIX, TOKEN
 from modules.db import init
-from modules.logging import DiscordWebHookHandler
-
-bot = commands.Bot(command_prefix=COMMAND_PREFIX)
-bot.remove_command('help')
-bot.owner_id = ADMIN_ID
-
-# add logger which is sent to discord channel
-logger = logging.getLogger('discord')
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler()
-console_handler.setFormatter(logging.Formatter(
-    '[%(asctime)s] %(message)s', datefmt='%d-%m-%Y %H:%M'))
-discord_handler = DiscordWebHookHandler(WEBHOOK_URL)
-discord_handler.setFormatter(logging.Formatter(
-    '[%(asctime)s] %(message)s', datefmt='%d-%m-%Y %H:%M'))
-logger.addHandler(discord_handler)
-logger.addHandler(console_handler)
-
+from modules.logging import logger
 
 # Setting up asyncio to use uvloop if possible, a faster implementation on the event loop
 if os.name == "posix":
     import uvloop
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     logger.info("Linux decected, using uvloop")
+
+bot = commands.Bot(command_prefix=COMMAND_PREFIX)
+bot.remove_command('help')
+bot.owner_id = ADMIN_ID
 
 
 @bot.event
@@ -56,4 +42,5 @@ async def on_ready():
 
 
 # start bot
-bot.run(TOKEN)
+if __name__ == '__main__':
+    bot.run(TOKEN)

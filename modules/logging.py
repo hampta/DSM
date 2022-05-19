@@ -1,6 +1,9 @@
+import logging
 from logging import Handler, LogRecord
-from discord import Webhook, RequestsWebhookAdapter
+
 from aiohttp import client_exceptions
+from config import WEBHOOK_URL
+from discord import RequestsWebhookAdapter, Webhook
 
 
 # custom logger handler
@@ -19,3 +22,16 @@ class DiscordWebHookHandler(Handler):
             self.webhook.send(self.format(record), username='Logs')
         except (client_exceptions.ClientOSError, ConnectionError, client_exceptions.ClientConnectorError):
             print("Discord webhook connection error")
+
+
+# add logger which is sent to discord channel
+logger = logging.getLogger('discord')
+logger.setLevel(logging.INFO)
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(logging.Formatter(
+    '[%(asctime)s] %(message)s', datefmt='%d-%m-%Y %H:%M'))
+discord_handler = DiscordWebHookHandler(WEBHOOK_URL)
+discord_handler.setFormatter(logging.Formatter(
+    '[%(asctime)s] %(message)s', datefmt='%d-%m-%Y %H:%M'))
+logger.addHandler(discord_handler)
+logger.addHandler(console_handler)

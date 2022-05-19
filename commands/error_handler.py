@@ -1,18 +1,19 @@
-import discord
-import traceback
-import sys
-import logging
-from discord.ext import commands
-from aiohttp.client_exceptions import ClientOSError, ServerDisconnectedError, ClientConnectorError
-from discord.errors import DiscordServerError
 import socket
+import sys
+import traceback
+
+import discord
+from aiohttp.client_exceptions import (ClientConnectorError, ClientOSError,
+                                       ServerDisconnectedError)
+from discord.errors import DiscordServerError
+from discord.ext import commands
+from modules.logging import logger
 
 
 class CommandErrorHandler(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.logger = logging.getLogger('discord')
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
@@ -54,7 +55,7 @@ class CommandErrorHandler(commands.Cog):
                 await ctx.send('I could not find that member. Please try again.')
 
         else:
-            self.logger.error(f'Ignoring exception in command {error}:')
+            logger.error(f'Ignoring exception in command {error}:')
             traceback.print_exception(
                 type(error), error, error.__traceback__, file=sys.stderr)
 

@@ -1,23 +1,24 @@
 # -*- coding: utf-8 -*-
 import asyncio
-import logging
 
-
+from config import (CHECK_SERVER_INTERVAL, CHECK_SERVER_INTERVAL_MAX,
+                    CRON_LOOP_INTERVAL)
 from discord import Activity, ActivityType
 from discord.errors import Forbidden, NotFound
 from discord.ext import commands, tasks
 from modules.db import Servers
+from modules.logging import logger
 from modules.utils import embed_generator, get_server_info, stop_server
+
 
 class ServersCron(commands.Cog):
     def __init__(self, bot: commands.Bot):
-        self.logger = logging.getLogger('discord')
         self.bot = bot
-        self.crontab.start()
-        self.logger.info("Cron started")
         self.loop = asyncio.get_event_loop()
+        self.crontab.start()
+        logger.info("Cron started")
 
-    @tasks.loop(minutes=1, reconnect=True)
+    @tasks.loop(seconds=CRON_LOOP_INTERVAL, reconnect=True)
     async def crontab(self):
         await self.bot.wait_until_ready()
         channels = await Servers.filter(worked=True).group_by("channel").values_list("channel", flat=True)
@@ -33,7 +34,7 @@ class ServersCron(commands.Cog):
         if channel is None:
             await Servers.filter(channel=channel_id).update(worked=False)
             return
-        sleep = 6 if len(servers_ids) > 3 else .7
+        sleep = CHECK_SERVER_INTERVAL_MAX if len(servers_ids) > 3 else CHECK_SERVER_INTERVAL
         for id in servers_ids:
             await self.for_id(channel, id)
             await asyncio.sleep(sleep)
