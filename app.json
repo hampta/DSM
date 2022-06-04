@@ -1,0 +1,31 @@
+{
+    "name": "Discord Server Monitoring",
+    "description": "A python discord bot that queries Source and GoldSrc servers",
+    "repository": "https://github.com/hampta/DSM",
+    "logo": "heroku/python",
+    "keywords": [
+        "python",
+        "discord",
+        "monitoring",
+        "source",
+        "goldsrc",
+        "bot"
+    ],
+    "addons": [
+        "heroku-postgresql"
+    ],
+    "env": {
+        "TOKEN": {
+            "description": "The bot token",
+            "generator": "secret"
+        },
+        "ADMIN_ID": {
+            "description": "Admin Discord user id",
+            "generator": "secret"
+        },
+        "WEBHOOK_URL": {
+            "description": "Webhook URL for Discord channel logging",
+            "generator": "secret"
+        }
+    }
+}
