@@ -1,14 +1,14 @@
 # Discord Server Monitoring #
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/hampta/DSM)
 
 ## Information ##
-### What is Server Monitoring bot ###
-A python discord bot that queries Source and GoldSrc servers and notifies those who added several servers to their watchlists if those servers are currently down. Pretty simple. It is also capable of showing you detailed information such as:
+All games on the Source (CSS, CSGO) and GoldSource (HL1DM, CS 1.6) engines are supported.
 
-* Hostname
-* Current map
-* VAC status
-* Amount of players on server
+- Auto update once a minute
+- Manual update
+- Easy to use
 
 
 ## Usage ##
@@ -19,10 +19,10 @@ It has just four commands:
 * `!remove <ip>:<*port>` — removes certain server from your watchlist
 * `!help` - help message
 
+\* - optional (defalut value is 27015
 ## Installation ##
-### Requirements ###
-**Hardware:** not a toster and a decent hard drive.  
-**Software:** python 3.8+ with latest packages:
+### Requirements ### 
+python 3.8+ with latest packages:
 
 * discord.py
 * tortoise-orm

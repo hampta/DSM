@@ -17,15 +17,15 @@
     "env": {
         "TOKEN": {
             "description": "The bot token",
-            "generator": "secret"
+            "generator": ""
         },
         "ADMIN_ID": {
             "description": "Admin Discord user id",
-            "generator": "secret"
+            "generator": ""
         },
         "WEBHOOK_URL": {
             "description": "Webhook URL for Discord channel logging",
-            "generator": "secret"
+            "generator": ""
         }
     }
 }
