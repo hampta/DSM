@@ -54,6 +54,9 @@ class CommandErrorHandler(commands.Cog):
             if ctx.command.qualified_name == 'tag list':
                 await ctx.send('I could not find that member. Please try again.')
 
+        elif isinstance(error, DiscordServerError):
+            print(f'Discord Server Error: {error}')
+            
         else:
             logger.error(f'Ignoring exception in command {error}:')
             traceback.print_exception(
