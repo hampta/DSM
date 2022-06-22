@@ -1,3 +1,4 @@
+import contextlib
 import socket
 import sys
 import traceback
@@ -29,8 +30,7 @@ class CommandErrorHandler(commands.Cog):
         if hasattr(ctx.command, 'on_error'):
             return
 
-        cog = ctx.cog
-        if cog:
+        if cog := ctx.cog:
             if cog._get_overridden_method(cog.cog_command_error) is not None:
                 return
 
@@ -45,18 +45,15 @@ class CommandErrorHandler(commands.Cog):
             await ctx.send(f'{ctx.command} has been disabled.')
 
         elif isinstance(error, commands.NoPrivateMessage):
-            try:
+            with contextlib.suppress(discord.HTTPException):
                 await ctx.author.send(f'{ctx.command} can not be used in Private Messages.')
-            except discord.HTTPException:
-                pass
-
         elif isinstance(error, commands.BadArgument):
             if ctx.command.qualified_name == 'tag list':
                 await ctx.send('I could not find that member. Please try again.')
 
         elif isinstance(error, DiscordServerError):
             print(f'Discord Server Error: {error}')
-            
+
         else:
             logger.error(f'Ignoring exception in command {error}:')
             traceback.print_exception(

@@ -16,15 +16,16 @@ bot_names = open("resources/botnames.txt", "r").read()
 bot_names = bot_names.split("\n")
 
 # get ip and port from string
+
+
 async def get_ip_port(address: str) -> tuple:
     ip, *port = address.split(":")
-    if not port:
-        port = 27015
-    else:
-        port = port[0]
+    port = port[0] if port else 27015
     return (ip, port)
 
 # validate ip
+
+
 async def is_valid_ip(address: str) -> bool:
     # check if ip is valid
     if re.match(r"^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9]{1,2})(\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9]{1,2})){3}(:((6553[0-5])|(655[0-2][0-9])|(65[0-4][0-9]{2})|(6[0-4][0-9]{3})|([1-5][0-9]{4})|([0-5]{1,5})|([0-9]{1,4})))?$|^$", address):
@@ -39,6 +40,8 @@ async def is_valid_ip(address: str) -> bool:
         return False
 
 # get server info from ip
+
+
 async def get_server_info(ip, port):
     address = (ip, port)
     try:
@@ -47,12 +50,14 @@ async def get_server_info(ip, port):
         if info is None:
             raise
         return (info, players)
-    except (asyncio.exceptions.TimeoutError, ConnectionRefusedError, OSError):
+    except (asyncio.exceptions.TimeoutError, OSError):
         return (False, False)
     except a2s.exceptions.BufferExhaustedError:
         return (info, False)
 
 # get max played time
+
+
 async def max_played(players, max=0.0):
     for player in players:
         if float(player.duration) > max:
@@ -62,19 +67,23 @@ async def max_played(players, max=0.0):
     return max
 
 # embed message generator
+
+
 async def embed_generator(server_info, players, instance):
     if server_info:
         em = discord.Embed(title=server_info.server_name,
                            description=server_info.game, colour=0x10EE00)
-        em.add_field(name="🔌 IP: ", value=f"`{instance.ip}:{instance.port}`", inline=True)
+        em.add_field(
+            name="🔌 IP: ", value=f"`{instance.ip}:{instance.port}`", inline=True)
         em.add_field(name="🛰️ Status: ", value="✅ Server online")
         em.add_field(name="🗺️ Map: ", value=server_info.map_name, inline=True)
         if server_info.player_count - server_info.bot_count and players:
-            em.add_field(name=f"😎 Players: ",
-                         value=server_info.player_count - server_info.bot_count, inline=True)
+            em.add_field(name="😎 Players: ", value=server_info.player_count - server_info.bot_count, inline=True)
+
         else:
-            em.add_field(name=f"😎 Players: ", value="0", inline=True)
-        em.add_field(name=f"🤖 Bots: ", value=server_info.bot_count, inline=True)
+            em.add_field(name="😎 Players: ", value="0", inline=True)
+        em.add_field(name="🤖 Bots: ",
+                     value=server_info.bot_count, inline=True)
         em.add_field(name=f"🌍 Max Players: ",
                      value=server_info.max_players, inline=True)
         em.add_field(name="👮 VAC: ", value=(
@@ -96,7 +105,7 @@ async def embed_generator(server_info, players, instance):
                 player_played += strftime("%H:%M:%S",
                                           gmtime(players_[player_name][1])) + "\n"
                 if len(player_name) > 22:
-                    player_name = player_name[:22] + "..."
+                    player_name = f"{player_name[:22]}..."
                 if not player_name:
                     player_name = "⏱️ Connecting..."
                 player_names += f"{n} - {player_name} \n"
@@ -109,13 +118,13 @@ async def embed_generator(server_info, players, instance):
     else:
         em = discord.Embed(title=instance.name,
                            description=instance.game, colour=0xFF0000)
-        em.add_field(name="🔌 IP: ", value=f"`{instance.ip}:{instance.port}`", inline=True)
+        em.add_field(
+            name="🔌 IP: ", value=f"`{instance.ip}:{instance.port}`", inline=True)
         em.add_field(name="🛰️ Status: ", value=":no_entry: Server offline")
     em.set_footer(text="Last update",
                   icon_url="https://cdn.discordapp.com/attachments/836638488924782624/941072454674165780/update-icon.png")
     em.timestamp = datetime.datetime.utcnow()
     return em
-
 
 async def stop_server(message_id):
     logger.info(f"Stopping server {message_id}")

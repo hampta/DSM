@@ -22,13 +22,12 @@ class RemoveServer(commands.Cog):
         instance = await Servers.filter(ip=ip, port=port, channel=ctx.channel.id, worked=True).first()
         if instance is None:
             return await ctx.send(":warning: Server is not in database.")
-        else:
-            await Servers.filter(id=instance.id).update(worked=False)
-            message = await ctx.channel.fetch_message(instance.message)
-            await message.delete()
-            await ctx.send(":white_check_mark: Server removed.")
-            logger.info(
-                f"{ctx.author.name}#{ctx.author.discriminator} removed server {addr_raw} in #{ctx.channel.name}, {ctx.guild.name}")
+        await Servers.filter(id=instance.id).update(worked=False)
+        message = await ctx.channel.fetch_message(instance.message)
+        await message.delete()
+        await ctx.send(":white_check_mark: Server removed.")
+        logger.info(
+            f"{ctx.author.name}#{ctx.author.discriminator} removed server {addr_raw} in #{ctx.channel.name}, {ctx.guild.name}")
 
 
 def setup(bot: commands.Bot):
