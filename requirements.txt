@@ -1,6 +1,6 @@
 # database orm
 tortoise-orm==0.18.0
-asyncpg==0.25.0
+asyncpg==0.29.0
 # discord library
 py-cord
 # aiohttp speedup
